@@ -7,5 +7,5 @@ data class Conversation(
     val participants: List<String> = emptyList(),
     val lastMessage: String = "",
     val avatarUrl: String = "",
-    val extra: String = "" // for email
+    val extra: String = "" 
 )

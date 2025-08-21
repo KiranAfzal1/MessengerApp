@@ -6,7 +6,6 @@
     android:orientation="vertical"
     android:background="?android:attr/colorBackground">
 
-    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,7 +14,6 @@
         android:elevation="4dp"
         android:padding="16dp">
 
-        <!-- Top Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -23,7 +21,6 @@
             android:gravity="center_vertical"
             android:layout_marginBottom="16dp">
 
-            <!-- User Info -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -79,7 +76,6 @@
 
             </LinearLayout>
 
-            <!-- Action Buttons -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -106,7 +102,6 @@
 
         </LinearLayout>
 
-        <!-- Search Bar -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -129,7 +124,6 @@
 
     </LinearLayout>
 
-    <!-- Conversations List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/conversations_recycler_view"
         android:layout_width="match_parent"
@@ -138,7 +132,6 @@
         android:clipToPadding="false"
         android:scrollbars="vertical" />
 
-    <!-- Empty State -->
     <LinearLayout
         android:id="@+id/empty_state"
         android:layout_width="match_parent"
@@ -175,15 +168,17 @@
 
     </LinearLayout>
 
-    <!-- Floating Action Button -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/new_chat_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageButton
+        android:id="@+id/new_chat_btn"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_message_circle"
-        android:contentDescription="New chat"
-        app:tint="@color/white" />
+        android:background="@drawable/circle_button_background2"
+        android:padding="8dp"
+    android:src="@drawable/ic_chatbot"
+    android:scaleType="centerCrop"
+    android:contentDescription="New Chat" />
+
 
 </LinearLayout>

@@ -74,7 +74,7 @@ class LoginActivity : AppCompatActivity() {
                 if (signInTask.isSuccessful) {
                     saveUserData(name, email)
                 } else {
-                    // If sign-in fails, create new user
+
                     auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener { createTask ->
                             binding.progressBar.visibility = View.GONE
@@ -102,14 +102,19 @@ class LoginActivity : AppCompatActivity() {
             "https://messageapp-28a37-default-rtdb.asia-southeast1.firebasedatabase.app/"
         )
         val usersRef = database.getReference("users")
-        val userMap = mapOf("name" to name, "email" to email)
+
+        val userMap = mapOf(
+            "name" to name,
+            "email" to email,
+            "isOnline" to true, // mark as online on login
+            "lastSeen" to System.currentTimeMillis() // current timestamp
+        )
 
         usersRef.child(uid).setValue(userMap).addOnCompleteListener { task ->
             binding.progressBar.visibility = View.GONE
             binding.sendCodeButton.isEnabled = true
 
             if (task.isSuccessful) {
-                // Save FCM token
                 FirebaseMessaging.getInstance().token.addOnCompleteListener { tokenTask ->
                     if (tokenTask.isSuccessful) {
                         val fcmToken = tokenTask.result
@@ -123,7 +128,6 @@ class LoginActivity : AppCompatActivity() {
                 sharedPrefs.edit().putString("user_name", name).apply()
                 sharedPrefs.edit().putString("user_email", email).apply()
 
-                // Navigate to ChatList
                 startActivity(Intent(this, ChatListActivity::class.java))
                 finish()
             } else {
@@ -133,4 +137,5 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+
 }

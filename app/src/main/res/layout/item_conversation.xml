@@ -28,7 +28,6 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <!-- Conversation name -->
         <TextView
             android:id="@+id/conversationName"
             android:layout_width="wrap_content"
@@ -40,7 +39,6 @@
             android:maxLines="1"
             android:ellipsize="end"/>
 
-        <!-- Extra info (email) -->
         <TextView
             android:id="@+id/conversationExtra"
             android:layout_width="wrap_content"

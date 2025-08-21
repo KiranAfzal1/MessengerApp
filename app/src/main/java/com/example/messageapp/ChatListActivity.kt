@@ -10,6 +10,7 @@ import com.example.messageapp.model.Conversation
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.messenger.databinding.ActivityChatListBinding
+import com.example.messageapp.BotChatActivity
 
 class ChatListActivity : AppCompatActivity() {
 
@@ -34,29 +35,49 @@ class ChatListActivity : AppCompatActivity() {
         setupSearch()
     }
 
+    /**
+     * Ensure current user exists in DB
+     */
     private fun ensureCurrentUserExists() {
         if (currentUserId.isEmpty()) return
+
         val sharedPrefs = getSharedPreferences("messenger_prefs", MODE_PRIVATE)
         val name = sharedPrefs.getString("user_name", "Unknown") ?: "Unknown"
         val email = sharedPrefs.getString("user_email", "Unknown") ?: "Unknown"
 
         usersRef.child(currentUserId).get().addOnSuccessListener { snapshot ->
             if (!snapshot.exists()) {
-                usersRef.child(currentUserId).setValue(mapOf("name" to name, "email" to email))
+                // Create new user record with full data
+                val userMap = mapOf(
+                    "name" to name,
+                    "email" to email,
+                    "isOnline" to true,
+                    "lastSeen" to System.currentTimeMillis()
+                )
+                usersRef.child(currentUserId).setValue(userMap)
             } else {
+                // Update UI with saved name
                 val dbName = snapshot.child("name").getValue(String::class.java) ?: name
                 binding.userNameText.text = dbName
+
+                // Update online status
+                usersRef.child(currentUserId).updateChildren(
+                    mapOf(
+                        "isOnline" to true,
+                        "lastSeen" to System.currentTimeMillis()
+                    )
+                )
             }
         }.addOnFailureListener { it.printStackTrace() }
     }
 
     private fun setupRecycler() {
         adapter = ConversationAdapter { conv ->
+            // Open ChatDetailActivity with conversationId and name
             val conversationId = getConversationId(currentUserId, conv.id)
             startActivity(Intent(this, ChatDetailActivity::class.java).apply {
                 putExtra("conversation_id", conversationId)
                 putExtra("conversation_name", conv.name)
-                putExtra("is_group", false)
             })
         }
         binding.conversationsRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -86,7 +107,7 @@ class ChatListActivity : AppCompatActivity() {
                         )
                     )
                 }
-                updateAdapter(allUsers) // show full list initially
+                updateAdapter(allUsers)
             }
 
             override fun onCancelled(error: DatabaseError) = error.toException().printStackTrace()
@@ -95,6 +116,14 @@ class ChatListActivity : AppCompatActivity() {
 
     private fun setupClickListeners() {
         binding.signOutButton.setOnClickListener {
+            if (currentUserId.isNotEmpty()) {
+                usersRef.child(currentUserId).updateChildren(
+                    mapOf(
+                        "isOnline" to false,
+                        "lastSeen" to System.currentTimeMillis()
+                    )
+                )
+            }
             FirebaseAuth.getInstance().signOut()
             startActivity(Intent(this, LoginActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -106,8 +135,9 @@ class ChatListActivity : AppCompatActivity() {
             startActivity(Intent(this, SettingActivity::class.java))
         }
 
-        binding.newChatFab.setOnClickListener {
-            // TODO: implement new chat screen
+        binding.newChatBtn.setOnClickListener {
+            // Open BotChatActivity (AI Chat)
+            startActivity(Intent(this, BotChatActivity::class.java))
         }
     }
 
@@ -127,9 +157,32 @@ class ChatListActivity : AppCompatActivity() {
 
     private fun updateAdapter(list: List<Conversation>) {
         adapter.submitList(list)
-        binding.emptyState.visibility = if (list.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
+        binding.emptyState.visibility =
+            if (list.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
     }
 
     private fun getConversationId(uid1: String, uid2: String) =
         if (uid1 < uid2) "$uid1-$uid2" else "$uid2-$uid1"
+
+    /**
+     * Update presence automatically
+     */
+    override fun onStart() {
+        super.onStart()
+        if (currentUserId.isNotEmpty()) {
+            usersRef.child(currentUserId).child("isOnline").setValue(true)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (currentUserId.isNotEmpty()) {
+            usersRef.child(currentUserId).updateChildren(
+                mapOf(
+                    "isOnline" to false,
+                    "lastSeen" to System.currentTimeMillis()
+                )
+            )
+        }
+    }
 }

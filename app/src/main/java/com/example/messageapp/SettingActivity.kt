@@ -16,7 +16,6 @@ class SettingActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding
     private lateinit var sharedPrefs: SharedPreferences
 
-    // Current user ID
     private val currentUserId: String
         get() = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
@@ -49,29 +48,26 @@ class SettingActivity : AppCompatActivity() {
 
             if (currentUserId.isEmpty()) return@setOnCheckedChangeListener
 
-            val topic = "user_$currentUserId"
+            val userRef = FirebaseDatabase.getInstance("https://messageapp-28a37-default-rtdb.asia-southeast1.firebasedatabase.app/")
+                .getReference("users")
+                .child(currentUserId)
 
             if (isChecked) {
-                FirebaseMessaging.getInstance().subscribeToTopic(topic)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Toast.makeText(this, "Notifications enabled", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(this, "Failed to enable notifications", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                // Get token and save it in Firebase + subscribe to topic
+                FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
+                    userRef.child("fcmToken").setValue(token)
+                    FirebaseMessaging.getInstance().subscribeToTopic("user_$currentUserId")
+                    Toast.makeText(this, "Notifications enabled", Toast.LENGTH_SHORT).show()
+                }
             } else {
-                FirebaseMessaging.getInstance().unsubscribeFromTopic(topic)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Toast.makeText(this, "Notifications disabled", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(this, "Failed to disable notifications", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                // Remove token from Firebase + unsubscribe from topic
+                userRef.child("fcmToken").removeValue()
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("user_$currentUserId")
+                Toast.makeText(this, "Notifications disabled", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
 
     private fun setupBackButton() {
         binding.backButton.setOnClickListener { finish() }
@@ -98,22 +94,41 @@ class SettingActivity : AppCompatActivity() {
     private fun updateUsername(newName: String) {
         if (currentUserId.isEmpty()) return
 
-        // Update locally
+        // Update SharedPreferences
         sharedPrefs.edit().putString("user_name", newName).apply()
 
-        // Update in Firebase
-        val userRef = FirebaseDatabase.getInstance().getReference("users")
+        // Update in "users" node
+        val userRef = FirebaseDatabase.getInstance("https://messageapp-28a37-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            .getReference("users")
             .child(currentUserId)
             .child("name")
 
-        userRef.setValue(newName).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                binding.userNameText.text = newName
-                Toast.makeText(this, "Username updated successfully", Toast.LENGTH_SHORT).show()
-            } else {
-                task.exception?.printStackTrace()
-                Toast.makeText(this, "Failed to update username", Toast.LENGTH_SHORT).show()
+        userRef.setValue(newName)
+
+        // Update inside all chats where this user is a participant
+        val chatsRef = FirebaseDatabase.getInstance("https://messageapp-28a37-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            .getReference("chats")
+
+        chatsRef.get().addOnSuccessListener { snapshot ->
+            snapshot.children.forEach { chatSnapshot ->
+                val participants = chatSnapshot.child("meta/participants").children.map { it.value.toString() }
+                if (participants.contains(currentUserId)) {
+                    // Update "meta/participantsName" if you keep names in meta (optional)
+                    chatSnapshot.ref.child("meta/participantsName").child(currentUserId).setValue(newName)
+
+                    // Update messages sent by this user
+                    chatSnapshot.child("messages").children.forEach { msgSnapshot ->
+                        val senderId = msgSnapshot.child("senderId").getValue(String::class.java)
+                        if (senderId == currentUserId) {
+                            msgSnapshot.ref.child("senderName").setValue(newName)
+                        }
+                    }
+                }
             }
         }
+
+        binding.userNameText.text = newName
+        Toast.makeText(this, "Username updated successfully", Toast.LENGTH_SHORT).show()
     }
+
 }

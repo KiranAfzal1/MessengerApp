@@ -6,6 +6,7 @@
     android:orientation="vertical"
     android:background="?android:attr/colorBackground">
 
+    <!-- Top AppBar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,73 +25,34 @@
             android:src="@drawable/ic_arrow_left"
             android:contentDescription="Back" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+        <FrameLayout
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="12dp">
 
-            <FrameLayout
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="12dp">
+            <ImageView
+                android:id="@+id/contact_avatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/circle_avatar_background"
+                android:src="@drawable/ic_chatbot" />
 
-                <ImageView
-                    android:id="@+id/contact_avatar"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/circle_avatar_background"
-                    android:src="@drawable/ic_person" />
+        </FrameLayout>
 
-                <View
-                    android:id="@+id/online_indicator"
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:layout_gravity="bottom|end"
-                    android:layout_marginEnd="2dp"
-                    android:layout_marginBottom="2dp"
-                    android:background="@drawable/circle_green_background"
-                    android:elevation="2dp" />
-
-            </FrameLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/contact_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Contact Name"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="?android:attr/textColorPrimary" />
-
-                <TextView
-                    android:id="@+id/status_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Online"
-                    android:textSize="12sp"
-                    android:textColor="?android:attr/textColorSecondary" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/contact_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:text="Messenger Bot"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary" />
 
     </LinearLayout>
 
+    <!-- Messages Recycler -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/messages_recycler_view"
+        android:id="@+id/botChatRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -101,6 +63,7 @@
         android:paddingHorizontal="16dp"
         android:scrollbars="vertical" />
 
+    <!-- Input Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -109,15 +72,6 @@
         android:elevation="8dp"
         android:padding="16dp"
         android:gravity="center_vertical">
-
-        <ImageButton
-            android:id="@+id/attach_button"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/circle_button_background"
-            android:src="@drawable/ic_paperclip"
-            android:contentDescription="Attach file" />
 
         <FrameLayout
             android:layout_width="0dp"
@@ -136,7 +90,7 @@
                 app:boxCornerRadiusBottomEnd="24dp">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/message_input"
+                    android:id="@+id/messageBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textCapSentences|textMultiLine"
@@ -145,25 +99,14 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <ImageButton
-                android:id="@+id/emoji_button"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="end|center_vertical"
-                android:layout_marginEnd="12dp"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ic_smile"
-                android:contentDescription="Emoji picker" />
-
         </FrameLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/send_button"
+            android:id="@+id/sendButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_send"
             android:contentDescription="Send message"
-            android:enabled="false"
             app:fabSize="mini"
             app:tint="@color/white" />
 
