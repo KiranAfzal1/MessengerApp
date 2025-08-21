@@ -14,7 +14,7 @@
         android:layout_marginEnd="16dp">
 
         <ImageView
-            android:id="@+id/contact_avatar"
+            android:id="@+id/conversationAvatar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/circle_avatar_background"
@@ -28,8 +28,9 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
+        <!-- Conversation name -->
         <TextView
-            android:id="@+id/contact_name"
+            android:id="@+id/conversationName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Contact Name"
@@ -39,15 +40,16 @@
             android:maxLines="1"
             android:ellipsize="end"/>
 
+        <!-- Extra info (email) -->
         <TextView
-            android:id="@+id/last_message"
+            android:id="@+id/conversationExtra"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Last message..."
+            android:text="email@example.com"
             android:textSize="14sp"
             android:textColor="?android:attr/textColorSecondary"
-            android:maxLines="2"
+            android:maxLines="1"
             android:ellipsize="end"/>
     </LinearLayout>
 </LinearLayout>

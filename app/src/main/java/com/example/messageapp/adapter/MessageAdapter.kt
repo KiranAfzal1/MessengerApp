@@ -24,24 +24,21 @@ class MessageAdapter(private val currentUserId: String) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
-        val layout = if (viewType == 1)
-            R.layout.item_message_sent
-        else
-            R.layout.item_message_received
+        val layout = if (viewType == 1) R.layout.item_message_sent else R.layout.item_message_received
         val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
         return MessageViewHolder(view)
     }
+
+    override fun getItemCount() = messages.size
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         holder.bind(messages[position])
     }
 
-    override fun getItemCount(): Int = messages.size
-
     inner class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val messageText: TextView = itemView.findViewById(R.id.message_text)
+        private val contentText: TextView = itemView.findViewById(R.id.messageText)
         fun bind(message: Message) {
-            messageText.text = message.content
+            contentText.text = message.content
         }
     }
 }

@@ -1,7 +1,8 @@
 package com.example.messageapp.model
 
 data class User(
-    val uid: String? = null,
-    val name: String? = null,
-    val phone: String? = null
+    val uid: String = "",
+    val name: String = "",
+    val email: String = "",
+    val fcmToken: String = ""
 )

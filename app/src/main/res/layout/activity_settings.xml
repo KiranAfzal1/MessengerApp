@@ -7,7 +7,6 @@
     android:padding="16dp"
     android:background="?android:attr/colorBackground">
 
-    <!-- Header with Back Button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,8 +16,8 @@
 
         <ImageButton
             android:id="@+id/back_button"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_arrow_left"
             android:contentDescription="Back" />
@@ -35,7 +34,6 @@
 
     </LinearLayout>
 
-    <!-- User Info -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -61,7 +59,6 @@
             android:textSize="14sp"
             android:textColor="?android:attr/textColorSecondary" />
 
-        <!-- Edit Button -->
         <Button
             android:id="@+id/edit_username_button"
             android:layout_width="wrap_content"
@@ -73,7 +70,6 @@
 
     </LinearLayout>
 
-    <!-- Notification Toggle -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

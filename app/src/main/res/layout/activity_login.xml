@@ -7,7 +7,7 @@
     android:background="@drawable/login_background"
     android:padding="16dp">
 
-    <!-- Main Content -->
+    <!-- Center Content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -70,7 +70,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/name_input"
+                        android:id="@+id/nameInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPersonName"
@@ -79,103 +79,56 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Phone Number Container -->
-                <LinearLayout
-                    android:id="@+id/phone_container"
+                <!-- Email Input -->
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:hint="Email"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_marginTop="16dp">
 
-                    <com.google.android.material.textfield.TextInputLayout
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/emailInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Phone Number"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        android:inputType="textEmailAddress"
+                        android:textAlignment="center"
+                        android:textSize="16sp" />
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/phone_input"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="phone"
-                            android:textAlignment="center"
-                            android:textSize="16sp" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/send_code_button"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:layout_marginTop="16dp"
-                        android:text="Send Verification Code"
-                        android:textSize="16sp"
-                        android:enabled="false"
-                        app:cornerRadius="8dp" />
-
-                </LinearLayout>
-
-                <!-- OTP Container -->
-                <LinearLayout
-                    android:id="@+id/otp_container"
+                <!-- Password Input -->
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
+                    android:hint="Password"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_marginTop="16dp">
 
-                    <com.google.android.material.textfield.TextInputLayout
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/passwordInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Verification Code"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        android:inputType="textPassword"
+                        android:textAlignment="center"
+                        android:textSize="16sp" />
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/otp_input"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:maxLength="6"
-                            android:textAlignment="center"
-                            android:textSize="20sp"
-                            android:letterSpacing="0.5" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <TextView
-                        android:id="@+id/phone_number_display"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="16dp"
-                        android:textSize="12sp"
-                        android:textColor="?android:attr/textColorSecondary" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/verify_button"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:layout_marginBottom="8dp"
-                        android:text="Verify"
-                        android:textSize="16sp"
-                        android:enabled="false"
-                        app:cornerRadius="8dp"
-                        app:icon="@drawable/ic_shield" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/back_button"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:text="Back to Phone Number"
-                        android:textSize="14sp"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        app:cornerRadius="8dp" />
-
-                </LinearLayout>
+                <!-- Send/Login Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/sendCodeButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="24dp"
+                    android:text="Login / Register"
+                    android:textSize="16sp"
+                    android:enabled="false"
+                    app:cornerRadius="8dp" />
 
                 <!-- Progress Bar -->
                 <ProgressBar
-                    android:id="@+id/progress_bar"
+                    android:id="@+id/progressBar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"

@@ -15,7 +15,10 @@ class SettingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
     private lateinit var sharedPrefs: SharedPreferences
-    private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: "unknown"
+
+    // Current user ID
+    private val currentUserId: String
+        get() = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,10 +35,9 @@ class SettingActivity : AppCompatActivity() {
 
     private fun loadUserData() {
         val name = sharedPrefs.getString("user_name", "Unknown")
-        val phone = sharedPrefs.getString("user_phone", "Unknown")
-
+        val email = sharedPrefs.getString("user_email", "Unknown")
         binding.userNameText.text = name
-        binding.userPhoneText.text = phone
+        binding.userPhoneText.text = email
     }
 
     private fun setupNotificationToggle() {
@@ -45,10 +47,28 @@ class SettingActivity : AppCompatActivity() {
         binding.notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
             sharedPrefs.edit().putBoolean("notifications_enabled", isChecked).apply()
 
+            if (currentUserId.isEmpty()) return@setOnCheckedChangeListener
+
+            val topic = "user_$currentUserId"
+
             if (isChecked) {
-                FirebaseMessaging.getInstance().subscribeToTopic("user_$currentUserId")
+                FirebaseMessaging.getInstance().subscribeToTopic(topic)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(this, "Notifications enabled", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(this, "Failed to enable notifications", Toast.LENGTH_SHORT).show()
+                        }
+                    }
             } else {
-                FirebaseMessaging.getInstance().unsubscribeFromTopic("user_$currentUserId")
+                FirebaseMessaging.getInstance().unsubscribeFromTopic(topic)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(this, "Notifications disabled", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(this, "Failed to disable notifications", Toast.LENGTH_SHORT).show()
+                        }
+                    }
             }
         }
     }
@@ -67,34 +87,33 @@ class SettingActivity : AppCompatActivity() {
                 .setView(editText)
                 .setPositiveButton("Save") { _, _ ->
                     val newName = editText.text.toString().trim()
-                    if (newName.isNotEmpty()) {
-                        updateUsername(newName)
-                    } else {
-                        Toast.makeText(this, "Username cannot be empty", Toast.LENGTH_SHORT).show()
-                    }
+                    if (newName.isNotEmpty()) updateUsername(newName)
+                    else Toast.makeText(this, "Username cannot be empty", Toast.LENGTH_SHORT).show()
                 }
                 .setNegativeButton("Cancel", null)
-                .create()
                 .show()
         }
     }
 
     private fun updateUsername(newName: String) {
+        if (currentUserId.isEmpty()) return
+
         // Update locally
         sharedPrefs.edit().putString("user_name", newName).apply()
-        binding.userNameText.text = newName
 
-        // Update in Firebase Realtime Database
-        FirebaseDatabase.getInstance().getReference("users")
+        // Update in Firebase
+        val userRef = FirebaseDatabase.getInstance().getReference("users")
             .child(currentUserId)
             .child("name")
-            .setValue(newName)
-            .addOnSuccessListener {
+
+        userRef.setValue(newName).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                binding.userNameText.text = newName
                 Toast.makeText(this, "Username updated successfully", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener { e ->
-                e.printStackTrace()
+            } else {
+                task.exception?.printStackTrace()
                 Toast.makeText(this, "Failed to update username", Toast.LENGTH_SHORT).show()
             }
+        }
     }
 }

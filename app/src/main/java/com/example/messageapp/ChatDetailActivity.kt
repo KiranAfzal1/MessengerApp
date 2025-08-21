@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.messageapp.adapter.MessageAdapter
 import com.example.messageapp.model.Message
+import androidx.core.widget.doAfterTextChanged
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.messenger.databinding.ActivityChatDetailBinding
@@ -14,27 +15,29 @@ class ChatDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatDetailBinding
     private lateinit var messageAdapter: MessageAdapter
     private val messages = mutableListOf<Message>()
-    private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
+    private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     private lateinit var otherUserId: String
     private lateinit var otherUserName: String
 
-    private val db = FirebaseDatabase.getInstance().reference
     private lateinit var messagesRef: DatabaseReference
+    private lateinit var metaRef: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChatDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Get the other user id and name from intent
+        // Get clicked user's info
         otherUserId = intent.getStringExtra("conversation_id") ?: ""
         otherUserName = intent.getStringExtra("conversation_name") ?: ""
         binding.contactName.text = otherUserName
 
         setupRecycler()
+        setupInputWatcher()
         setupSendButton()
         setupMessagesListener()
+        setupBackButton()
     }
 
     private fun setupRecycler() {
@@ -42,6 +45,15 @@ class ChatDetailActivity : AppCompatActivity() {
         binding.messagesRecyclerView.layoutManager =
             LinearLayoutManager(this).apply { stackFromEnd = true }
         binding.messagesRecyclerView.adapter = messageAdapter
+    }
+
+    private fun setupInputWatcher() {
+        val input = binding.messageInput
+        val sendBtn = binding.sendButton
+
+        input.doAfterTextChanged { text ->
+            sendBtn.isEnabled = !text.isNullOrBlank()
+        }
     }
 
     private fun setupSendButton() {
@@ -53,7 +65,10 @@ class ChatDetailActivity : AppCompatActivity() {
 
     private fun setupMessagesListener() {
         val conversationId = getConversationId(currentUserId, otherUserId)
-        messagesRef = db.child("chats").child(conversationId).child("messages")
+        messagesRef = FirebaseDatabase.getInstance()
+            .getReference("chats/$conversationId/messages")
+        metaRef = FirebaseDatabase.getInstance()
+            .getReference("chats/$conversationId/meta")
 
         messagesRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -75,36 +90,44 @@ class ChatDetailActivity : AppCompatActivity() {
                 binding.messagesRecyclerView.scrollToPosition(messages.size - 1)
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                error.toException().printStackTrace()
-            }
+            override fun onCancelled(error: DatabaseError) = error.toException().printStackTrace()
         })
     }
 
     private fun sendMessage(text: String) {
         val conversationId = getConversationId(currentUserId, otherUserId)
-        val newMsgRef = db.child("chats").child(conversationId).child("messages").push()
+        val newMsgRef = FirebaseDatabase.getInstance()
+            .getReference("chats/$conversationId/messages")
+            .push()
         val timestamp = System.currentTimeMillis()
+
         val msg = mapOf(
             "senderId" to currentUserId,
             "content" to text,
             "timestamp" to timestamp,
             "isRead" to false
         )
-        newMsgRef.setValue(msg)
 
-        // Save lastMessage summary for chat list display
-        val lastMsgMap = mapOf(
+        // Save message
+        newMsgRef.setValue(msg)
+            .addOnSuccessListener { binding.messageInput.text?.clear() }
+            .addOnFailureListener { it.printStackTrace() }
+
+        // Update chat meta for chat list
+        val meta = mapOf(
             "lastMessage" to text,
             "lastMessageTime" to timestamp,
             "participants" to listOf(currentUserId, otherUserId)
         )
-        db.child("chats").child(conversationId).child("meta").setValue(lastMsgMap)
-
-        binding.messageInput.text?.clear()
+        metaRef.setValue(meta)
     }
 
-    // Generate a unique conversation id for 1-1 chat
+    private fun setupBackButton() {
+        binding.backButton.setOnClickListener {
+            finish() // Finish ChatDetailActivity and go back to ChatActivity list
+        }
+    }
+
     private fun getConversationId(uid1: String, uid2: String): String {
         return if (uid1 < uid2) "$uid1-$uid2" else "$uid2-$uid1"
     }
