@@ -86,7 +86,7 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="@drawable/circle_button_background"
-                    android:src="@drawable/ic_logout"
+                    android:src="@drawable/ic_signout"
                     android:contentDescription="Sign Out" />
 
                 <ImageButton
@@ -95,7 +95,7 @@
                     android:layout_height="48dp"
                     android:layout_marginStart="8dp"
                     android:background="@drawable/circle_button_background"
-                    android:src="@drawable/ic_settings"
+                    android:src="@drawable/ic_setting"
                     android:contentDescription="Settings" />
 
             </LinearLayout>

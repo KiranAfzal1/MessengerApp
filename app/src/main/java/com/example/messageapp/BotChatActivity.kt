@@ -23,21 +23,18 @@ class BotChatActivity : AppCompatActivity() {
         binding = ActivityBotChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Setup RecyclerView
         adapter = BotMessageAdapter(messages)
         binding.botChatRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.botChatRecyclerView.adapter = adapter
 
-        // Back button
         findViewById<ImageButton>(R.id.back_button).setOnClickListener {
             finish()
         }
 
-        // Send button
         binding.sendButton.setOnClickListener {
             val text = binding.messageBox.text.toString().trim()
             if (text.isNotEmpty()) {
-                addMessage(BotMessage(text, true)) // user message
+                addMessage(BotMessage(text, true))
                 binding.messageBox.setText("")
                 botReply(text)
             } else {
@@ -54,7 +51,7 @@ class BotChatActivity : AppCompatActivity() {
 
     private fun botReply(userMessage: String) {
         val reply = getBotResponse(userMessage)
-        addMessage(BotMessage(reply, false)) // bot message
+        addMessage(BotMessage(reply, false))
     }
 
     private fun getBotResponse(message: String): String {
