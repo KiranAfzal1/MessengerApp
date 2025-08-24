@@ -39,7 +39,7 @@ This project includes a `google-services.json` file **only for demo/testing purp
 ![loginregister](https://github.com/user-attachments/assets/e457e521-cb62-4d4c-8bb5-f10021ef9438)
 
 ### Chatlist
-![chatlist](https://github.com/user-attachments/assets/823514a8-b3f7-48fb-8f6a-dffd43c8b306)
+![chatlist](https://github.com/user-attachments/assets/d7139b26-bdcb-41aa-8aff-de8dda6d252d)
 
 ### Userchat
 ![chatdetail](https://github.com/user-attachments/assets/5fe1d29f-1cb8-4caa-b377-95b3bdd0dabc)
